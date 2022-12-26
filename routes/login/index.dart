@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
-import 'package:db/db.dart' as db;
-import 'package:shared/shared.dart';
+import 'package:db/db.dart';
 import 'package:stormberry/stormberry.dart';
 
 Future<Response> onRequest(RequestContext context) async {
@@ -22,19 +21,21 @@ Future<Response> _post(RequestContext context) async {
     final jsonString = await context.request.body();
     final decodedMap = json.decode(jsonString) as Map<String, dynamic>;
 
-    final result = User.fromJson(decodedMap);
+    final email = decodedMap['email'];
+    final password = decodedMap['password'];
 
-    await database.users.insertOne(
-      db.UserInsertRequest(
-        email: result.email,
-        password: result.password,
-        name: result.name,
-        phoneNumber: '',
-      ),
+    final user = await database.users.queryUsers(
+      QueryParams(where: "email = '$email' and password = '$password'"),
     );
 
+    if (user.isNotEmpty) {
+      return Response(
+        body: 'success',
+      );
+    }
     return Response(
-      body: 'success',
+      body: 'invalid username or password',
+      statusCode: HttpStatus.badRequest,
     );
   } catch (exception) {
     return Response(
@@ -42,10 +43,4 @@ Future<Response> _post(RequestContext context) async {
       statusCode: HttpStatus.badRequest,
     );
   }
-
-  // final user = await db.users.queryUser(1);
-  // if (user != null) {
-  //   final result = User.fromDB(user);
-  //   return Response(body: jsonEncode(result));
-  // }
 }
