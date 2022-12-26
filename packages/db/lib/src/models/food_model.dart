@@ -1,5 +1,4 @@
-import 'package:db/src/rating/rating_model.dart';
-import 'package:stormberry/stormberry.dart';
+part of '../models.dart';
 
 @Model()
 abstract class Food {
@@ -18,4 +17,6 @@ abstract class Food {
   double get price;
 
   List<Rating> get ratings;
+
+  List<FoodAddon> get addons;
 }

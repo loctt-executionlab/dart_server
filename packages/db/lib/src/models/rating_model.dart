@@ -1,4 +1,4 @@
-import 'package:stormberry/stormberry.dart';
+part of '../models.dart';
 
 @Model()
 abstract class Rating {

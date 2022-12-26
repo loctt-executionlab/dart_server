@@ -1,4 +1,4 @@
-import 'package:stormberry/stormberry.dart';
+part of '../models.dart';
 
 @Model()
 abstract class User {
@@ -6,5 +6,8 @@ abstract class User {
   @AutoIncrement()
   int get id;
 
+  String get email;
+  String get password;
   String get name;
+  String get phoneNumber;
 }
