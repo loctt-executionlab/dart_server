@@ -7,37 +7,30 @@ import 'package:db/db.dart';
 import 'package:shared/shared.dart' as domain;
 import 'package:stormberry/stormberry.dart';
 
-Future<Response> onRequest(RequestContext context) async {
+Future<Response> onRequest(RequestContext context, String message) async {
   if (context.request.method == HttpMethod.get) {
-    return _get(context);
+    return _get(context, message);
   }
 
   return Response(statusCode: HttpStatus.methodNotAllowed);
 }
 
-Future<Response> _get(RequestContext context) async {
+Future<Response> _get(RequestContext context, String message) async {
   try {
+    final requestId = int.parse(message);
     final database = context.read<Database>();
 
-    final restaurants = await database.restaurants.queryBaseViews(
-      const QueryParams(
-        limit: 4,
-      ),
-    );
+    final restaurant = await database.restaurants.queryBaseView(requestId);
 
-    final result = restaurants
-        .map(
-          (e) => domain.Restaurant(
-            name: e.name,
-            id: e.id.toString(),
-            imageUrl: e.logoImageUrl,
-            shippingTime: e.deliveryTime,
-            shippingPrice: e.deliveryFee,
-          ).toJson(),
-        )
-        .toList();
+    if (restaurant != null) {
+      final result = domain.Restaurant(
+        name: restaurant.name,
+        id: restaurant.id.toString(),
+        imageUrl: restaurant.logoImageUrl,
+        shippingTime: restaurant.deliveryTime,
+        shippingPrice: restaurant.deliveryFee,
+      ).toJson();
 
-    if (result.isNotEmpty) {
       return Response(
         body: jsonEncode(
           result,

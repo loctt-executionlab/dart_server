@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:db/db.dart';
+import 'package:shared/shared.dart' as domain;
 import 'package:stormberry/stormberry.dart';
 
 Future<Response> onRequest(RequestContext context) async {
@@ -30,7 +31,7 @@ Future<Response> _post(RequestContext context) async {
 
     if (user.isNotEmpty) {
       return Response(
-        body: 'success',
+        body: jsonEncode(domain.User.fromDB(user.first).toJson()),
       );
     }
     return Response(
